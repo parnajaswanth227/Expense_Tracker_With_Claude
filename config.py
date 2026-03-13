@@ -1,19 +1,3 @@
-"""
-config.py
-─────────
-Central configuration from environment variables.
-
-REQUIRED:
-    SECRET_KEY           — JWT signing key
-    AND one of:
-      DATABASE_URL       — Neon / cloud Postgres connection string
-      OR: DB_HOST + DB_PORT + DB_NAME + DB_USER + DB_PASSWORD
-
-OPTIONAL:
-    ACCESS_TOKEN_EXPIRE_MINUTES  — default 525600 (1 year)
-    ALLOW_REGISTRATION           — "true" / "false"  (default: true)
-    EXPORT_DIR                   — CSV export directory
-"""
 
 import os
 import sys

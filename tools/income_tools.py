@@ -1,8 +1,3 @@
-"""
-tools/income_tools.py — multi-user
-Tools (4): add_income, list_income, delete_income, monthly_income
-"""
-
 from context import current_user
 from db import execute_query
 from logger import get_logger

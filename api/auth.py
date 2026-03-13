@@ -1,16 +1,3 @@
-"""
-api/auth.py
-───────────
-Database-backed user authentication with bcrypt password hashing.
-
-Key differences from V2 (single-user)
-──────────────────────────────────────
-  • Users are stored in the `users` DB table, not in .env
-  • Passwords are hashed with bcrypt — never stored plain text
-  • create_user()      — register a new user (called from /auth/register)
-  • authenticate_user() — query DB + verify bcrypt hash
-  • verify_token() and create_access_token() are unchanged from V2
-"""
 
 from datetime import datetime, timedelta, timezone
 

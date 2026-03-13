@@ -8,7 +8,7 @@ psycopg[binary]
 python-dotenv
 
 # HTTP server
-fastapi>=0.100.0
+fastapi
 uvicorn[standard]
 
 # JWT authentication

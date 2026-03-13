@@ -1,14 +1,3 @@
-"""
-tools/expense_tools.py — multi-user
-────────────────────────────────────
-All queries are automatically scoped to the authenticated user via
-current_user ContextVar. Claude never passes a user_id — it's injected
-invisibly from the JWT token.
-
-Tools (5): add_expense, update_expense, delete_expense,
-           list_expenses, get_expense_by_id
-"""
-
 from typing import Optional
 
 from context import current_user

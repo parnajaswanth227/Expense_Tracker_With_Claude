@@ -1,9 +1,3 @@
-"""
-resources/category_resource.py
-───────────────────────────────
-MCP resource that exposes the full category taxonomy from categories.json.
-"""
-
 import json
 import os
 

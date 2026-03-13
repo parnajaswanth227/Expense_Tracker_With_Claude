@@ -1,9 +1,4 @@
-"""
-db.py
-─────
-Fully async PostgreSQL layer (psycopg v3).
-Single execute_query() works for both stdio and HTTP modes.
-"""
+
 
 from decimal import Decimal
 from datetime import date, datetime

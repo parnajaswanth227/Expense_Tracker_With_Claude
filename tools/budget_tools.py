@@ -1,10 +1,3 @@
-"""
-tools/budget_tools.py — multi-user
-Tools (4): set_budget, get_budget, check_budget_status, delete_budget
-
-Key change from V2: UNIQUE constraint is now (user_id, category_id),
-so each user has their own independent budget per category.
-"""
 
 from context import current_user
 from db import execute_query

@@ -1,29 +1,3 @@
-"""
-main.py
-───────
-FastMCP entrypoint — registers all 29 async tools + 1 resource.
-
-Run modes
-─────────
-  HTTP (deployed server, multi-user, JWT auth):
-      uvicorn api.server:app --port 8000
-
-  Stdio (Claude Desktop, single local user, no auth needed):
-      python main.py
-      OR: uv run fastmcp install claude-desktop main.py
-
-Tool inventory (29 total)
-──────────────────────────
-  Expense  (5): add_expense, update_expense, delete_expense,
-                list_expenses, get_expense_by_id
-  Income   (4): add_income, list_income, delete_income, monthly_income
-  Budget   (4): set_budget, get_budget, check_budget_status, delete_budget
-  Category (4): get_categories, add_category, update_category, delete_category
-  Summary  (9): summarize_expenses, daily_summary, weekly_summary,
-                monthly_summary, yearly_summary, category_breakdown,
-                top_spending, compare_months, get_balance
-  Utility  (3): get_last_expenses, search_expenses, export_expenses_csv
-"""
 
 from fastmcp import FastMCP
 

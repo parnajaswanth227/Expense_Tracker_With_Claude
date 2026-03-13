@@ -1,32 +1,3 @@
-"""
-api/middleware.py
-─────────────────
-Pure ASGI JWT middleware — NOT BaseHTTPMiddleware.
-
-Why pure ASGI?
-──────────────
-  BaseHTTPMiddleware has a known bug: context vars set inside it do NOT
-  propagate into the route handler via call_next, because it uses anyio
-  task groups which create a fresh context copy.
-
-  A pure ASGI middleware just awaits self.app(scope, receive, send) in the
-  SAME task, so context vars set here are visible everywhere downstream —
-  including inside FastMCP tool calls.
-
-Public paths (no token required)
-──────────────────────────────────
-  /auth/token      — login
-  /auth/register   — signup
-  /health          — liveness probe
-  /docs            — Swagger UI
-  /redoc           — ReDoc
-  /openapi.json    — OpenAPI spec
-  /favicon.ico     — browser icon
-
-Every other path (including /mcp/*) requires:
-  Authorization: Bearer <jwt_token>
-"""
-
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send

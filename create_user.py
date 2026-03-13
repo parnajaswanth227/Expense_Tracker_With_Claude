@@ -1,21 +1,3 @@
-"""
-create_user.py
-──────────────
-CLI script to manually create a user account.
-
-Useful when ALLOW_REGISTRATION=false in .env (production lockdown)
-and you need to add a new user directly from the server terminal.
-
-Usage
-─────
-  python create_user.py
-  python create_user.py --username alice --password MySecret123
-
-Options
-───────
-  --username   Username (3-50 chars, alphanumeric + underscore)
-  --password   Password (min 8 chars)
-"""
 
 import argparse
 import asyncio
