@@ -5,7 +5,9 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from contextlib import asynccontextmanager
+import os
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -89,6 +91,13 @@ async def login(body: LoginRequest):
 def health():
     return {"status": "ok", "server": "Expense Tracker MCP v3"}
 
+
+
+@app.get("/register")
+def register_page():
+    """Serve the user registration + token setup page."""
+    html_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "register.html")
+    return FileResponse(html_path)
 
 # Add MCP routes directly into the app router — no mount, no prefix stripping
 for route in mcp_app.routes:

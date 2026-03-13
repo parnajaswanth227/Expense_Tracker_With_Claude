@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expense Tracker — Setup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+      padding: 40px; width: 100%; max-width: 480px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .logo { font-size: 32px; margin-bottom: 8px; }
+    h1 { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .subtitle { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+    .tabs {
+      display: flex; background: #0f172a; border-radius: 10px;
+      padding: 4px; margin-bottom: 28px; gap: 4px;
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600;
+      color: #64748b; cursor: pointer; border-radius: 8px; border: none;
+      background: transparent; transition: all 0.2s;
+    }
+    .tab.active { background: #1d4ed8; color: #fff; }
+    .form-group { margin-bottom: 20px; }
+    label {
+      display: block; font-size: 13px; font-weight: 600; color: #94a3b8;
+      margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    input {
+      width: 100%; padding: 12px 16px; background: #0f172a;
+      border: 1.5px solid #334155; border-radius: 10px; color: #f1f5f9;
+      font-size: 15px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: #1d4ed8; }
+    .hint { font-size: 12px; color: #475569; margin-top: 6px; }
+    button.primary {
+      width: 100%; padding: 14px; background: #1d4ed8; color: #fff;
+      font-size: 15px; font-weight: 700; border: none; border-radius: 10px;
+      cursor: pointer; margin-top: 8px; transition: background 0.2s;
+    }
+    button.primary:hover { background: #1e40af; }
+    button.primary:disabled { background: #334155; cursor: not-allowed; }
+    .alert {
+      padding: 12px 16px; border-radius: 10px; font-size: 14px;
+      margin-bottom: 20px; display: none;
+    }
+    .alert.error   { background: #450a0a; border: 1px solid #dc2626; color: #fca5a5; }
+    .alert.success { background: #052e16; border: 1px solid #16a34a; color: #86efac; }
+    #result { display: none; }
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .check {
+      width: 36px; height: 36px; background: #052e16; border: 2px solid #16a34a;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .result-header h2 { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+    .result-header p  { font-size: 13px; color: #64748b; }
+    .section-label {
+      font-size: 12px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+    }
+    .token-box {
+      background: #0f172a; border: 1px solid #334155; border-radius: 10px;
+      padding: 14px; font-family: "Courier New", monospace; font-size: 12px;
+      color: #38bdf8; word-break: break-all; margin-bottom: 10px; line-height: 1.5;
+    }
+    .copy-btn {
+      width: 100%; padding: 10px; background: #0f172a; border: 1.5px solid #334155;
+      border-radius: 8px; color: #94a3b8; font-size: 13px; font-weight: 600;
+      cursor: pointer; margin-bottom: 24px; transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: #1d4ed8; color: #fff; }
+    .copy-btn.copied { border-color: #16a34a; color: #86efac; }
+    .steps {
+      background: #0f172a; border: 1px solid #334155; border-radius: 10px;
+      padding: 18px; margin-bottom: 20px;
+    }
+    .steps h3 { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 14px; }
+    .step { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+    .step-num {
+      width: 22px; height: 22px; min-width: 22px; background: #1d4ed8;
+      border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-text { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+    .step-text code {
+      background: #1e293b; color: #38bdf8; padding: 2px 6px;
+      border-radius: 4px; font-family: "Courier New", monospace; font-size: 12px;
+    }
+    .step-text strong { color: #f1f5f9; }
+    .config-box {
+      background: #0f172a; border: 1px solid #334155; border-radius: 10px;
+      padding: 14px; font-family: "Courier New", monospace; font-size: 11px;
+      color: #94a3b8; white-space: pre; overflow-x: auto; margin-bottom: 10px; line-height: 1.6;
+    }
+    .download-btn {
+      width: 100%; padding: 12px; background: #0f172a; border: 1.5px solid #1d4ed8;
+      border-radius: 8px; color: #7dd3fc; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .download-btn:hover { background: #1e293b; }
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid #334155; border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">💰</div>
+  <h1>Expense Tracker</h1>
+  <p class="subtitle">Connect your personal finance assistant to Claude Desktop</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('register')">New Account</button>
+    <button class="tab" onclick="switchTab('login')">Already Have Account</button>
+  </div>
+
+  <div class="alert" id="alert"></div>
+
+  <div id="register-form">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="reg-username" placeholder="e.g. alice" autocomplete="off"/>
+      <p class="hint">Letters, numbers, underscores only. Min 3 characters.</p>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="reg-password" placeholder="Minimum 8 characters"/>
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="reg-password2" placeholder="Type password again"/>
+    </div>
+    <button class="primary" id="reg-btn" onclick="register()">Create My Account</button>
+  </div>
+
+  <div id="login-form" style="display:none">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="login-username" placeholder="Your username" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Your password"/>
+    </div>
+    <button class="primary" id="login-btn" onclick="login()">Get My Token</button>
+  </div>
+
+  <div id="result">
+    <div class="result-header">
+      <div class="check">✅</div>
+      <div>
+        <h2 id="result-title">Account Created!</h2>
+        <p id="result-sub">Follow the steps below to connect Claude Desktop</p>
+      </div>
+    </div>
+
+    <p class="section-label">Your JWT Token</p>
+    <div class="token-box" id="token-display"></div>
+    <button class="copy-btn" id="copy-token-btn" onclick="copyToken()">📋  Copy Token</button>
+
+    <div class="steps">
+      <h3>📋 How to connect Claude Desktop</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Open File Explorer, paste this in the address bar and press Enter:<br/>
+          <code>%APPDATA%\Claude\</code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          Click <strong>Download Config</strong> below and <strong>replace</strong>
+          the existing <code>claude_desktop_config.json</code> in that folder.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>Fully quit Claude Desktop</strong> — right-click the tray icon → Quit.
+          Then reopen it.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          Start a new chat and type:<br/>
+          <strong>"Add ₹500 food expense for today"</strong> 🎉
+        </div>
+      </div>
+    </div>
+
+    <p class="section-label">Config File Preview</p>
+    <div class="config-box" id="config-preview"></div>
+    <button class="download-btn" onclick="downloadConfig()">⬇️  Download claude_desktop_config.json</button>
+  </div>
+</div>
+
+<script>
+  const SERVER_URL = window.location.origin;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'register') || (i === 1 && tab === 'login'));
+    });
+    document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+    document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
+    document.getElementById('result').style.display = 'none';
+    hideAlert();
+  }
+
+  function showAlert(msg, type = 'error') {
+    const el = document.getElementById('alert');
+    el.textContent = msg; el.className = `alert ${type}`; el.style.display = 'block';
+  }
+  function hideAlert() { document.getElementById('alert').style.display = 'none'; }
+
+  function setLoading(btnId, loading, defaultText) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading ? '<span class="spinner"></span>Please wait…' : defaultText;
+  }
+
+  function showResult(token, isNew) {
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('login-form').style.display    = 'none';
+    hideAlert();
+    document.getElementById('token-display').textContent  = token;
+    document.getElementById('result-title').textContent   = isNew ? 'Account Created! 🎉' : 'Here is Your Token!';
+    document.getElementById('config-preview').textContent = JSON.stringify(buildConfig(token), null, 2);
+    document.getElementById('result').style.display = 'block';
+  }
+
+  function buildConfig(token) {
+    return {
+      mcpServers: {
+        ExpenseTracker: {
+          command: "C://Program Files//nodejs//npx",
+          args: ["-y", "mcp-remote@latest", `${SERVER_URL}/mcp`,
+                 "--header", `Authorization: Bearer ${token}`]
+        }
+      }
+    };
+  }
+
+  async function register() {
+    const username  = document.getElementById('reg-username').value.trim();
+    const password  = document.getElementById('reg-password').value;
+    const password2 = document.getElementById('reg-password2').value;
+    if (!username || !password) return showAlert('Please fill in all fields.');
+    if (password !== password2)  return showAlert('Passwords do not match.');
+    if (password.length < 8)     return showAlert('Password must be at least 8 characters.');
+    setLoading('reg-btn', true, 'Create My Account');
+    hideAlert();
+    try {
+      const r1 = await fetch(`${SERVER_URL}/auth/register`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({username, password})
+      });
+      const d1 = await r1.json();
+      if (!r1.ok) return showAlert(d1.detail || 'Registration failed.');
+      const r2 = await fetch(`${SERVER_URL}/auth/token`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({username, password})
+      });
+      const d2 = await r2.json();
+      if (!r2.ok) return showAlert(d2.detail || 'Could not get token.');
+      showResult(d2.access_token, true);
+    } catch(e) { showAlert('Cannot reach server. Is it running?'); }
+    finally { setLoading('reg-btn', false, 'Create My Account'); }
+  }
+
+  async function login() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!username || !password) return showAlert('Please fill in all fields.');
+    setLoading('login-btn', true, 'Get My Token');
+    hideAlert();
+    try {
+      const res  = await fetch(`${SERVER_URL}/auth/token`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({username, password})
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert(data.detail || 'Incorrect username or password.');
+      showResult(data.access_token, false);
+    } catch(e) { showAlert('Cannot reach server. Is it running?'); }
+    finally { setLoading('login-btn', false, 'Get My Token'); }
+  }
+
+  function copyToken() {
+    navigator.clipboard.writeText(document.getElementById('token-display').textContent).then(() => {
+      const btn = document.getElementById('copy-token-btn');
+      btn.textContent = '✅  Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋  Copy Token'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function downloadConfig() {
+    const token = document.getElementById('token-display').textContent;
+    const blob  = new Blob([JSON.stringify(buildConfig(token), null, 2)], {type:'application/json'});
+    const a     = document.createElement('a');
+    a.href      = URL.createObjectURL(blob);
+    a.download  = 'claude_desktop_config.json';
+    a.click();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const regVisible = document.getElementById('register-form').style.display !== 'none';
+    if (regVisible) register(); else login();
+  });
+</script>
+</body>
+</html>

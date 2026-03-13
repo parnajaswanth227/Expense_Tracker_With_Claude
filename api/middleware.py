@@ -41,6 +41,7 @@ _PUBLIC: frozenset = frozenset({
     "/auth/token",
     "/auth/register",
     "/health",
+    "/register",
     "/docs",
     "/redoc",
     "/openapi.json",
