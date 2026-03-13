@@ -20,10 +20,10 @@ from api.auth import authenticate_user, create_access_token, create_user
 from api.middleware import JWTMiddleware
 from config import ACCESS_TOKEN_EXPIRE_MINUTES, ALLOW_REGISTRATION
 from init_db import init_db
-from main import mcp
+from main import mcp as app
 
 # MCP sub-app
-mcp_app = mcp.http_app(path="/mcp")
+mcp_app = app.http_app(path="/mcp")
 
 
 @asynccontextmanager
