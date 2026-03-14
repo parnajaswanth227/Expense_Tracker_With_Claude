@@ -1,77 +1,25 @@
-# 💰 Expense Tracker MCP Server
+# 💰 Expense Tracker MCP v3
 
-A **multi-user AI-powered expense tracking server** built using **FastMCP, FastAPI, and PostgreSQL**.
+A **multi-user AI-powered expense tracking server** built with **FastMCP + FastAPI + PostgreSQL**.
+Users can manage finances using **plain English with AI**.
 
-This server integrates with **Claude Desktop via the Model Context Protocol (MCP)**, allowing users to **manage personal finances using natural language**.
+Works with:
 
-Example:
-
-> “Add ₹250 lunch expense under Food for today”
-
-The AI automatically calls the appropriate MCP tool.
+* 🖥 Claude Desktop
+* 📱 Claude.ai Free (via N8N)
+* 🌐 Any HTTP client
 
 ---
 
 # ✨ Features
 
-### 🔐 Secure Authentication
-
-* JWT-based authentication
-* Each user receives a **personal token**
-* Fully isolated user data
-
-### 👥 Multi-User Architecture
-
-* One server supports **many users**
-* Each user's data remains private
-
-### 🧰 29 MCP Tools
-
-Full financial toolkit including:
-
-* Expenses
-* Income
-* Budgets
-* Categories
-* Summaries
-* CSV export
-
-### ☁️ Cloud Ready
-
-Deploy easily using:
-
-* **Railway**
-* **Neon PostgreSQL**
-
-### 📋 Self-Service Registration
-
-Users can create accounts via:
-
-```
-/register
-```
-
----
-
-# 🏗️ System Architecture
-
-```
-Claude Desktop
-(MCP Client)
-        │
-        │  Bearer Token (JWT)
-        ▼
-FastAPI Application
-        │
-        │ JWT Middleware
-        ▼
-FastMCP Server
-(29 Financial Tools)
-        │
-        ▼
-Neon PostgreSQL
-(users, expenses, income, budgets)
-```
+* 🔐 **JWT Authentication** – secure multi-user system
+* 👥 **Multi-user support** – each user has isolated data
+* 🧰 **29 MCP tools** for expenses, income, budgets and analytics
+* 🌐 **Mobile friendly registration page**
+* ☁ **Cloud deployable** (Railway + Neon)
+* 🤖 **AI integration with Claude**
+* 🔄 **Claude.ai free support using N8N bridge**
 
 ---
 
@@ -79,45 +27,58 @@ Neon PostgreSQL
 
 ```
 expense_tracker_v3/
+
+├── CORE
+│   ├── main.py
+│   ├── run.py
+│   ├── app.py
+│   ├── config.py
+│   ├── context.py
+│   ├── db.py
+│   ├── init_db.py
+│   ├── logger.py
+│   ├── utils.py
+│   └── create_user.py
 │
-├── main.py
-├── run.py
-├── app.py
-├── config.py
-├── context.py
-├── db.py
-├── init_db.py
-├── logger.py
-├── utils.py
-├── create_user.py
-├── schema.sql
-├── categories.json
-├── requirements.txt
-├── pyproject.toml
-├── Procfile
+├── DATABASE
+│   ├── schema.sql
+│   └── categories.json
 │
-├── api/
-│   ├── auth.py
-│   ├── middleware.py
-│   └── server.py
+├── API
+│   └── api/
+│       ├── __init__.py
+│       ├── auth.py
+│       ├── middleware.py
+│       └── server.py
 │
-├── tools/
-│   ├── expense_tools.py
-│   ├── income_tools.py
-│   ├── budget_tools.py
-│   ├── category_tools.py
-│   ├── summary_tools.py
-│   └── utility_tools.py
+├── MCP TOOLS
+│   └── tools/
+│       ├── expense_tools.py
+│       ├── income_tools.py
+│       ├── budget_tools.py
+│       ├── category_tools.py
+│       ├── summary_tools.py
+│       └── utility_tools.py
 │
-└── static/
-    └── register.html
+├── FRONTEND
+│   └── static/
+│       └── register.html
+│
+├── DEPLOYMENT
+│   ├── Procfile
+│   ├── pyproject.toml
+│   └── requirements.txt
+│
+└── README.md
 ```
+
+⚠ **Never commit `.env` to GitHub.**
 
 ---
 
-# 🛠️ MCP Tools
+# 🧰 MCP Tools (29)
 
-### Expense Tools
+## Expense Tools
 
 * add_expense
 * update_expense
@@ -125,28 +86,28 @@ expense_tracker_v3/
 * list_expenses
 * get_expense_by_id
 
-### Income Tools
+## Income Tools
 
 * add_income
 * list_income
 * delete_income
 * monthly_income
 
-### Budget Tools
+## Budget Tools
 
 * set_budget
 * get_budget
 * check_budget_status
 * delete_budget
 
-### Category Tools
+## Category Tools
 
 * get_categories
 * add_category
 * update_category
 * delete_category
 
-### Summary Tools
+## Summary Tools
 
 * summarize_expenses
 * daily_summary
@@ -158,84 +119,62 @@ expense_tracker_v3/
 * compare_months
 * get_balance
 
-### Utility Tools
+## Utility Tools
 
 * get_last_expenses
 * search_expenses
 * export_expenses_csv
 
-Total: **29 MCP tools**
-
 ---
 
-# 🗄️ Database Schema
-
-### Users
+# 🗄 Database Schema
 
 ```
 users
-- id
-- username (UNIQUE)
-- password (bcrypt)
-- created_at
-```
+ id
+ username
+ password
+ created_at
 
-### Categories
-
-```
 categories
-- id
-- name (UNIQUE)
-```
+ id
+ name
 
-Shared across all users.
-
-### Expenses
-
-```
 expenses
-- id
-- user_id
-- date
-- amount
-- category_id
-- subcategory
-- note
-```
+ id
+ user_id
+ date
+ amount
+ category_id
+ note
 
-### Income
-
-```
 income
-- id
-- user_id
-- date
-- amount
-- source
-- note
-```
+ id
+ user_id
+ date
+ amount
+ source
 
-### Budgets
-
-```
 budgets
-- id
-- user_id
-- category_id
-- monthly_limit
+ id
+ user_id
+ category_id
+ monthly_limit
 ```
 
-Unique constraint:
+All queries automatically filter:
 
 ```
-(user_id, category_id)
+WHERE user_id = current_user
 ```
+
+Each user has **completely isolated data**.
 
 ---
 
-# 🚀 Local Setup (Windows)
+# 🚀 Local Setup
 
-## 1. Clone Repository
+## 1️⃣ Clone Repository
 
 ```
 git clone https://github.com/parnajaswanth227/Expense_Tracker_With_Claude.git
@@ -244,7 +183,7 @@ cd Expense_Tracker_With_Claude
 
 ---
 
-## 2. Initialize Environment
+## 2️⃣ Create Python Environment
 
 ```
 uv init
@@ -252,9 +191,7 @@ uv venv --python 3.12
 .venv\Scripts\activate
 ```
 
----
-
-## 3. Fix Windows Link Mode
+Windows users:
 
 ```
 $env:UV_LINK_MODE="copy"
@@ -262,27 +199,27 @@ $env:UV_LINK_MODE="copy"
 
 ---
 
-## 4. Install Dependencies
+## 3️⃣ Install Dependencies
 
 ```
-uv add fastmcp fastapi uvicorn psycopg[binary] python-dotenv python-jose[cryptography] bcrypt
+uv add fastmcp fastapi uvicorn psycopg[binary] python-dotenv python-jose bcrypt
 uv pip install -r requirements.txt
 ```
 
 ---
 
-## 5. Create Environment File
+## 4️⃣ Create `.env`
 
-Create `.env`
+Create a `.env` file in the root folder.
 
 ```
-DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
-SECRET_KEY=your_secret_key
+DATABASE_URL=postgresql://user:pass@host/dbname?sslmode=require
+SECRET_KEY=your_secret_key_here
 ALLOW_REGISTRATION=true
 ACCESS_TOKEN_EXPIRE_MINUTES=525600
 ```
 
-Generate secret key:
+Generate a secret key:
 
 ```
 python -c "import secrets; print(secrets.token_hex(32))"
@@ -290,7 +227,7 @@ python -c "import secrets; print(secrets.token_hex(32))"
 
 ---
 
-## 6. Start Server
+## 5️⃣ Start Server
 
 ```
 uv run python run.py
@@ -304,94 +241,82 @@ http://localhost:8000
 
 ---
 
-# 🔑 Authentication Flow
+# 🔑 API Endpoints
+
+| Method | Endpoint       | Description   |
+| ------ | -------------- | ------------- |
+| GET    | /health        | Server status |
+| GET    | /register      | Signup page   |
+| POST   | /auth/register | Create user   |
+| POST   | /auth/token    | Login         |
+| POST   | /mcp           | MCP endpoint  |
+
+---
+
+# ☁ Cloud Deployment
+
+## Step 1: Create PostgreSQL Database
+
+Go to:
 
 ```
-User
- │
- │ POST /auth/register
- ▼
-Server creates user
- │
- │ returns JWT token
- ▼
-User calls MCP tools
- │
- │ Authorization: Bearer TOKEN
- ▼
-JWT middleware verifies user
- │
- ▼
-Tool executes with user_id
+https://neon.tech
+```
+
+Create database and copy connection string.
+
+---
+
+## Step 2: Deploy on Railway
+
+Go to:
+
+```
+https://railway.app
+```
+
+Create project → Deploy from GitHub.
+
+Railway will automatically use:
+
+```
+web: uvicorn api.server:app --host 0.0.0.0 --port $PORT
+```
+
+Add environment variables:
+
+| Variable                    | Value             |
+| --------------------------- | ----------------- |
+| DATABASE_URL                | Neon database URL |
+| SECRET_KEY                  | generated secret  |
+| ALLOW_REGISTRATION          | true              |
+| ACCESS_TOKEN_EXPIRE_MINUTES | 525600            |
+
+---
+
+## Step 3: Verify Deployment
+
+```
+https://your-app.railway.app/health
+```
+
+Expected response:
+
+```
+{"status":"ok"}
 ```
 
 ---
 
-# 🧪 Testing with PowerShell
+# 🖥 Using with Claude Desktop
 
-### Health Check
-
-```
-Invoke-RestMethod http://localhost:8000/health
-```
-
----
-
-### Register User
-
-```
-Invoke-RestMethod `
-  -Uri "http://localhost:8000/auth/register" `
-  -Method POST `
-  -ContentType "application/json" `
-  -Body '{"username":"jaswanth","password":"MyPassword123"}'
-```
-
----
-
-### Login
-
-```
-$r = Invoke-RestMethod `
-  -Uri "http://localhost:8000/auth/token" `
-  -Method POST `
-  -ContentType "application/json" `
-  -Body '{"username":"jaswanth","password":"MyPassword123"}'
-
-$token = $r.access_token
-```
-
----
-
-### Initialize MCP Session
-
-```
-$init = Invoke-WebRequest `
-  -Uri "http://localhost:8000/mcp" `
-  -Method POST `
-  -Headers @{
-    Authorization="Bearer $token"
-    "Content-Type"="application/json"
-    "Accept"="application/json, text/event-stream"
-  } `
-  -Body '{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
-```
-
----
-
-# 🖥️ Claude Desktop Integration
-
-## Option 1 — Local (stdio)
+Install MCP server:
 
 ```
 uv run fastmcp install claude-desktop main.py
 ```
 
----
-
-## Option 2 — Cloud HTTP
-
-Edit:
+Manual configuration:
 
 ```
 %APPDATA%\Claude\claude_desktop_config.json
@@ -399,95 +324,279 @@ Edit:
 
 ```
 {
-  "mcpServers": {
-    "ExpenseTracker": {
-      "command": "C://Program Files//nodejs//npx",
-      "args": [
-        "-y",
-        "mcp-remote@latest",
-        "https://your-app.railway.app/mcp",
-        "--header",
-        "Authorization: Bearer YOUR_TOKEN"
-      ]
-    }
-  }
+ "mcpServers": {
+   "ExpenseTracker": {
+     "command": "npx",
+     "args": [
+       "-y",
+       "mcp-remote@latest",
+       "https://your-app.railway.app/mcp",
+       "--header",
+       "Authorization: Bearer YOUR_TOKEN"
+     ]
+   }
+ }
 }
 ```
 
 ---
 
-# ☁️ Cloud Deployment
+# 📱 Using Claude.ai Free (Mobile + Web)
 
-## Neon Database
+Claude free plan does **not support MCP connectors directly**.
+We use an **N8N workflow bridge**.
 
-1. Create project at
-   https://neon.tech
-
-2. Copy connection string.
-
----
-
-## Railway Deployment
-
-1. Create project on Railway
-2. Deploy from GitHub repository
-
-Railway reads:
+## N8N Architecture
 
 ```
-Procfile
-```
-
-```
-web: uvicorn api.server:app --host 0.0.0.0 --port $PORT
+Claude AI
+   ↓
+N8N Webhook
+   ↓
+Expense Tracker MCP
+   ↓
+PostgreSQL Database
 ```
 
 ---
 
-## Environment Variables
+# Setup N8N
+
+## Step 1: Create Account
 
 ```
-DATABASE_URL
-SECRET_KEY
-ALLOW_REGISTRATION
-ACCESS_TOKEN_EXPIRE_MINUTES
+https://n8n.io
+```
+
+Create account.
+
+---
+
+## Step 2: Create Workflow
+
+Click:
+
+```
+New Workflow
 ```
 
 ---
 
-# 👤 Multi-User Workflow
+## Step 3: Import Workflow JSON
+
+Click:
+
+```
+⋮ → Import from JSON
+```
+
+Paste provided workflow.
+
+---
+
+## Step 4: Add Token
+
+Replace:
+
+```
+YOUR_JWT_TOKEN_HERE
+```
+
+with your token.
+
+---
+
+## Step 5: Activate Workflow
+
+Click **Activate**.
+
+You will receive webhook URL:
+
+```
+https://yourname.app.n8n.cloud/webhook/expense-tracker
+```
+
+---
+
+# Connect N8N to Claude.ai
+
+1. Open **Claude.ai**
+2. Go to:
+
+```
+Settings → Connectors
+```
+
+3. Select **N8N**
+4. Paste your webhook URL.
+
+Claude can now control your expense tracker.
+
+---
+
+# Example Commands
+
+Users can ask Claude:
+
+```
+Add expense ₹500 for lunch today
+```
+
+```
+Show my expenses this month
+```
+
+```
+Add ₹50,000 salary income
+```
+
+```
+Show my balance
+```
+
+```
+Check my budget
+```
+
+Claude will automatically call MCP tools.
+
+---
+
+# 👥 Multi-User Flow
 
 ```
 User opens /register
-        │
-        ▼
-Account created
-        │
-        ▼
-JWT token generated
-        │
-        ▼
-User adds token to Claude Desktop
-        │
-        ▼
-All MCP tools operate
-with isolated user data
+      ↓
+Creates username & password
+      ↓
+Receives JWT token
+      ↓
+Token used in
+ - Claude Desktop
+ - N8N workflow
+ - API calls
+```
+
+Each user has **separate database data**.
+
+---
+
+# 🔧 Admin Create Users
+
+```
+python create_user.py --username alice --password pass123
+```
+
+Disable public signup:
+
+```
+ALLOW_REGISTRATION=false
 ```
 
 ---
 
-# 📌 Example Natural Language Commands
+# 🐛 Troubleshooting
 
-Inside Claude Desktop:
+| Error             | Solution            |
+| ----------------- | ------------------- |
+| 401 Unauthorized  | Token expired       |
+| Database error    | Check DATABASE_URL  |
+| MCP session error | Restart server      |
+| N8N webhook error | Check workflow JSON |
+
+---
+
+# 🔐 Security
+
+Never commit:
 
 ```
-Add ₹300 dinner expense under Food
-Show my expenses for this week
-Compare spending between February and March
-What is my current balance?
-Export my expenses to CSV
+.env
+JWT tokens
+database credentials
 ```
 
-Claude automatically calls the correct MCP tool.
+Rotate tokens if exposed.
+
+---
+
+# 📦 Tech Stack
+
+| Layer         | Technology |
+| ------------- | ---------- |
+| MCP Framework | FastMCP    |
+| API           | FastAPI    |
+| Database      | PostgreSQL |
+| Cloud DB      | Neon       |
+| Deployment    | Railway    |
+| Automation    | N8N        |
+| AI Client     | Claude     |
+
+---
+
+# ⭐ Project Goal
+
+Create a **fully AI-powered personal finance assistant** where users manage expenses using **natural language with Claude AI**.
+
+---
+
+If you'd like, I can also help add:
+
+* 🧭 Architecture diagrams
+* 📸 Screenshots
+* 🔄 Workflow diagrams
+* 🏷 GitHub badges
+* 🎬 Animated demo
+
+to make your GitHub repository look like a **professional open-source project**.
 
 
+# 📸 Screenshots
+screenshorts\Screenshot 2026-03-14 113116.png
+## 💻 Web Dashboard – Expense Summary
+
+The AI assistant analyzes your expenses and presents a clear financial overview including income, spending distribution, and balance.
+
+![claude_desktop](screenshots/claude_desktop.png)
+
+Features shown:
+
+* Total income, expenses, and balance
+* Category-wise spending breakdown
+* Interactive spending chart
+* AI-generated financial insights
+
+Example insight:
+
+> You've spent ₹2,000 across 3 transactions. Food is the dominant category at 85% (₹1,700). With ₹60,000 income, you're saving **96.7%** — a healthy balance of **₹58,000**.
+
+---
+
+## 📱 Claude AI Mobile – Natural Language Expense Entry
+C:\Users\parna\Videos\expense_tracker_v3\screenshorts\WhatsApp Image 2026-03-14 at 11.33.34 AM.jpeg
+Users can add expenses using **natural language with AI**.
+![Claude ai web](screenshots/webapp.jpeg)
+Example command:
+
+```
+Add an expense 210 rs for petrol for my bike
+```
+
+Claude automatically:
+
+1. Detects the **transport category**
+2. Calls the **add_expense MCP tool**
+3. Stores the expense in the database
+4. Returns confirmation with details
+
+![Claude AI Expense Entry](screenshots/claude-expense-add.png)
+
+Returned response includes:
+
+* Expense ID
+* Amount
+* Category
+* Note
+* Date
+
+This demonstrates how users can **manage finances conversationally with AI**.

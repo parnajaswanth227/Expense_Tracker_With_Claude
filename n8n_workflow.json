@@ -1,0 +1,218 @@
+{
+  "name": "Expense Tracker MCP Router (Optimized)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "expense-tracker",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "256c157a-bcfa-433b-b4b7-8a277cc8f92c",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        6352,
+        -16
+      ],
+      "webhookId": "expense-tracker"
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASE_URL = 'https://web-production-d3df0.up.railway.app';\nconst TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYXN3YW50aCIsImV4cCI6MTgwNDk5NDE5Mn0.yxV0bxgqKi0cT_W_0Ol0p9QrxTBsAbskyrZKD0bsczQ';\nconst input = $input.first().json;\nconst body = input.body ?? input;\nif (!body.action) throw new Error('Missing required field: action');\nreturn [{ json: { BASE_URL, TOKEN, action: body.action, data: body.data || {} } }];"
+      },
+      "id": "f869631c-c515-4778-b538-a7d969903c88",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6576,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.BASE_URL }}/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json, text/event-stream"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"jsonrpc\":\"2.0\",\"id\":0,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"n8n\",\"version\":\"1.0\"}}}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "6d5a591b-9df0-491c-b63a-968029704121",
+      "name": "Initialize MCP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        6816,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst headers = response.headers || {};\nconst normalized = {};\nObject.keys(headers).forEach(k => { normalized[k.toLowerCase()] = headers[k]; });\nconst sessionId = normalized['mcp-session-id'];\nif (!sessionId) throw new Error('No session ID: ' + JSON.stringify(headers));\nconst prev = $('Parse Request').first().json;\nconst rpcBody = JSON.stringify({\n  jsonrpc: '2.0', id: 1, method: 'tools/call',\n  params: { name: prev.action, arguments: prev.data }\n});\nreturn [{ json: { ...prev, sessionId, rpcBody } }];"
+      },
+      "id": "906ce808-1a24-4eca-bd4c-81b67a077859",
+      "name": "Extract Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7056,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.BASE_URL }}/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json, text/event-stream"
+            },
+            {
+              "name": "mcp-session-id",
+              "value": "={{ $json.sessionId }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rpcBody }}",
+        "options": {}
+      },
+      "id": "95440d43-7db3-4c6f-b34f-696a6c0e8f16",
+      "name": "Call MCP Tool",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        7296,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "835446fd-c694-488b-8cc0-ea3a58bdbf12",
+      "name": "Return Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        7536,
+        -16
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Request": {
+      "main": [
+        [
+          {
+            "node": "Initialize MCP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize MCP": {
+      "main": [
+        [
+          {
+            "node": "Extract Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Session": {
+      "main": [
+        [
+          {
+            "node": "Call MCP Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call MCP Tool": {
+      "main": [
+        [
+          {
+            "node": "Return Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a5c48c3a-ddca-4240-912c-bdce97bef667",
+  "meta": {
+    "instanceId": "6a2437f404d3143693fb923ae18605e2c7bf3421e07ba78c0451619db2f39d3a"
+  },
+  "id": "5Xi5P1UmsTNOWjUR",
+  "tags": []
+}
